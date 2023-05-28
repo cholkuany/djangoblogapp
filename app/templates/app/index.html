@@ -1,99 +1,98 @@
 {% extends 'base.html' %}
 {% block title %}Blog | Welcome{% endblock title %}
 {% block content %}
-    <main class="sp">
-      <div class="container">
-        <center>
-          <div class="search-bar">
-            <input type="text" placeholder="Search" />
-            <a href='{% url 'search_page' %}' class="animated-search" onclick='searchbar()'>
-              <i class="uil uil-search"></i>
-            </a>
+<center>
+  <!-- ###################### -->
+  
+  <div id="carouselExampleIndicators" class="carousel" data-bs-interval="false">
+    <ol class="carousel-indicators">
+      <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner">
+      {% for p in featured_blog %}
+      <div class="carousel-item {% if forloop.first%} active {% endif %}">
+        <a href="{% url 'post_page' p.slug %}">
+          <img class="w-100" src="{{p.image.url}}" alt="{{p.title}}">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>{{p.title}}</h5>
+            <p>{{p.content|truncatewords:25}}</p>
           </div>
-          <div class="typo">
-            <h1 class="title">{{blogMeta.title}}</h1>
-            <p>
-              {{blogMeta.description}}
-            </p>
-          </div>
-          <div class="newsletter">
-            <form method="POST">
-              {% csrf_token %}
-              {{subscribe_form}}
-              <button class="btn btn-primary">Subscribe</button>
-            </form>
-            {% if subscribe_successful %}
-            <br>
-            <p>{{subscribe_successful}}</p>{% endif %}
-          </div>
-        </center>
+        </a>
       </div>
-    </main>
-    {% if featured_blog %}
+      {% endfor %}
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+ 
+  <!-- ###################### -->
+  <!-- <div class="search-bar">
+    <input type="text" placeholder="Search" />
+    <a href="{% url 'search_page' %}" class="animated-search" onclick='searchbar()'>
+      <i class="uil uil-search"></i>
+    </a>
+  </div>
+  <div class="typo">
+    <h1 class="title">{{blogMeta.title}}</h1>
+    <p>
+      {{blogMeta.description}}
+    </p>
+  </div>
+  <div class="newsletter">
+    <form method="POST">
+      {% csrf_token %}
+      {{subscribe_form}}
+      <button class="btn btn-primary">Subscribe</button>
+    </form>
+    {% if subscribe_successful %}
+    <br>
+    <p>{{subscribe_successful}}</p>{% endif %}
+  </div> -->
+</center>
+<!-- <main class="sp">
+  <div class="container"> -->
     <section class="sp">
       <div class="container">
-        <a href="{% url 'post_page' featured_blog.slug %}">
-        <div class="grid-2">
-          <div class="post-img">
-            <img src="{{featured_blog.image.url}}" alt="" />
-          </div>
-          <div class="post-content">
-            <div class="cetagory">
-              <p>Category name</p>
-            </div>
-            <h1>
-              {{featured_blog.title}}
-            </h1>
-            <p class="des">
-              {{featured_blog.content|truncatechars:200}}
-            </p>
-            <a class="learn" href="#"
-              >Learn more <span class="material-icons"> trending_flat </span></a
-            >
-          </div>
-        </div>
-      </a>
-      </div>
-    </section>
-    {% endif %}
-    <section class="sp">
-      <div class="container">
-        <h1 class="sec-title">Top blogs</h1>
+        <h1 class="sec-title">Popular blogs</h1>
         <div class="grid-3">
           {% for post in top_posts %}
           <!-- card -->
-            <a href="{% url 'post_page' post.slug %}">
                 <div class="card">
-                  <div class="post-img">
-                    <img src="{{post.image.url}}" alt="" />
-                    <div class="tag">{{post.tags.all.0.name}}</div>
-                  </div>
-                  <div class="card-content">
-                    <h3>
-                      {{post.content}}
-                    </h3>
-                    <div class="author">
-                      <div class="profile-pic">
-                        <img src="{{post.author.profile.profile_image.url}}" alt="" />
-                      </div>
-                      <div class="details">
-                        <p>{{post.author.first_name}}</p>
-                        <small>{{ post.last_updated | date }}</small>
+                  <a href="{% url 'post_page' post.slug %}">
+                    <div class="post-img">
+                      <img src="{{post.image.url}}" alt="" />
+                      <div class="tag">{{post.tags.all.0.name}}</div>
+                    </div>
+                    <div class="card-content">
+                      <h3>
+                        {{post.content|truncatewords:15}}
+                      </h3>
+                      <div class="author">
+                        <div class="profile-pic">
+                          <img src="{{post.author.profile.profile_image.url}}" alt="" />
+                        </div>
+                        <a class="details" href="#">
+                          <p>{{post.author.first_name}}</p>
+                          <small>{{ post.last_updated | date }}</small>
+                        </a>
                       </div>
                     </div>
-                  </div>
+                  </a>
                 </div>
-            </a>
           <!-- card end-->
           {% endfor %}
         </div>
-        <center>
-          <a href=""><button class="btn btn-primary rounded view">
-            View more <span class="material-icons"> trending_flat </span>
-          </button></a>
-        </center>
       </div>
     </section>
+
     <section class="sp">
       <div class="container">
         <h1 class="sec-title">New blogs</h1>
@@ -110,11 +109,10 @@
                 <h3>
                   {{post.title}}
                 </h3>
+                <p>{{post.content|truncatewords:15}}</p>
                 <div class="author">
                   <div class="profile-pic">
-                    {% comment %} <img src="{{post.author.profile.profile_image.url}}" alt="" /> {% endcomment %}
-                    <img src="{{post.author.profile.profile_image.url}}" alt="" />
-                 
+                    <img src="{{post.author.profile.profile_image.url}}" alt="{{post.title}}" />
                   </div>
                   <div class="details">
                     <p>{{post.author.first_name}}</p>
@@ -127,11 +125,8 @@
           <!-- card end-->
           {% endfor %}
         </div>
-        <center>
-          <a href=""><button class="btn btn-primary rounded view">
-            View more <span class="material-icons"> trending_flat </span>
-          </button></a>
-        </center>
       </div>
     </section>
+  <!-- </div>
+</main> -->
 {% endblock content %}

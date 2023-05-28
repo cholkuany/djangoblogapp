@@ -26,13 +26,13 @@ class Profile(models.Model):
 
 class Subscribe(models.Model):
     email = models.EmailField(max_length=100)
-    date = models.DateTimeField(auto_now=True)
+    date  = models.DateTimeField(auto_now=True)
 
 
 class Tag(models.Model):
     name         = models.CharField(max_length=100)
     description  = models.CharField(max_length=100)
-    slug          = models.SlugField(max_length=200, unique=True)
+    slug         = models.SlugField(max_length=200, unique=True)
     
     def save(self, *args, **kwargs):
         if not self.id:
@@ -53,8 +53,8 @@ class Post(models.Model):
     is_featured = models.BooleanField(default=False)
     author = models.ForeignKey(User,on_delete=models.CASCADE, null=True, blank=True)
     
-    # def __str__(self):
-    #     return self.title
+    def __str__(self):
+        return self.title
 
 class Comment(models.Model):
     content = models.TextField()

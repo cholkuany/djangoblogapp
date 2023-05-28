@@ -22,10 +22,11 @@ def index(request):
     featured_blog = Post.objects.filter(is_featured = True)
     subscribe_form = SubscribeForm()
     subscribe_successful = None
-    blogMeta = None
+    blogMeta = None 
 
-    if featured_blog:
-        featured_blog = featured_blog[0]
+
+    if BlogMeta.objects.all().exists():
+        blogMeta = BlogMeta.objects.all()[0]
 
     if request.POST:
         subscribe_form = SubscribeForm(request.POST)
@@ -33,8 +34,6 @@ def index(request):
             subscribe_form.save()
             subscribe_successful = "Subscribe successful"
             subscribe_form = SubscribeForm()
-    if BlogMeta.objects.all().exists():
-        blogMeta = BlogMeta.objects.all()[0]
 
     context = {
         'posts': posts, 
@@ -50,6 +49,9 @@ def index(request):
 # @login_required(login_url='login_page')
 def post_page(request, slug):
     post = Post.objects.get(slug=slug)
+    most_recent = Post.objects.all().order_by('-last_updated')[0:3]
+    tags = Tag.objects.all()
+    related_posts = Post.objects.filter(tags__in=tags).distinct()
     comments = Comment.objects.filter(post=post, parent=None)
     form = CommentForm()
 
@@ -66,7 +68,10 @@ def post_page(request, slug):
                     comment_reply.parent = parent_obj
                     comment_reply.post = post
                     comment_reply.save()
+
                     return HttpResponseRedirect(reverse('post_page', kwargs={'slug': slug}))
+
+
             else:
                 comment = comment_form.save(commit=False)
                 postid = request.POST.get("post_id")
@@ -76,13 +81,16 @@ def post_page(request, slug):
 
                 return HttpResponseRedirect(reverse('post_page', kwargs={'slug': slug}))
 
-        
-
     if post.view_count is None:
         post.view_count = 1
     else:
         post.view_count = post.view_count + 1
-    context = {'post': post, 'form': form, 'comments': comments}
+    context = {'post': post, 
+               'form': form, 
+               'comments': comments, 
+               'most_recent': most_recent, 
+               'related_posts': related_posts
+               }
     return render(request, 'app/post.html', context)
 
 # @login_required(login_url='login_page')
@@ -151,10 +159,24 @@ def search_page(request):
     search_query = ''
     if request.GET.get('q'):
         search_query = request.GET.get('q')
+
     filtered_posts = Post.objects.filter(title__icontains=search_query)
+
     context = {
         'search_query': search_query,
         'filtered_posts': filtered_posts,
         }
 
     return render(request, 'app/search.html', context)
+
+def about(request):
+    blogMeta = None
+
+    if BlogMeta.objects.all().exists():
+        blogMeta = BlogMeta.objects.all()[0]
+
+    context = {
+        'blogMeta': blogMeta,
+    }
+    return render(request, 'app/about.html', context)
+
